@@ -7,6 +7,8 @@
 //
 
 #import "PCViewController.h"
+#import "UIViewController+PCPopup.h"
+#import "TestPopupController.h"
 
 @interface PCViewController ()
 
@@ -24,6 +26,13 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)showPopup:(id)sender
+{
+    TestPopupController *p = [[TestPopupController alloc] init];
+    
+    [self presentPopupViewController:p animated:YES completion:NULL];
 }
 
 @end

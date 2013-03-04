@@ -24,6 +24,10 @@
 		CA409BBF16E3A1290059FAF3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA409B3D16E38B490059FAF3 /* Foundation.framework */; };
 		CA409BC516E3A1290059FAF3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA409BC316E3A1290059FAF3 /* InfoPlist.strings */; };
 		CA409BC816E3A1290059FAF3 /* PCPopupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA409BC716E3A1290059FAF3 /* PCPopupTests.m */; };
+		CA6D006016E4725F00269AC8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA6D005F16E4725F00269AC8 /* QuartzCore.framework */; };
+		CAB95E6816E474C00048ED4C /* PCPopupContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CA409B6D16E3A0090059FAF3 /* PCPopupContainerViewController.m */; };
+		CAB95E6916E474C00048ED4C /* UIViewController+PCPopup.m in Sources */ = {isa = PBXBuildFile; fileRef = CA409B6F16E3A0090059FAF3 /* UIViewController+PCPopup.m */; };
+		CAB95E6A16E474C00048ED4C /* TestPopupController.m in Sources */ = {isa = PBXBuildFile; fileRef = CADFF8FD16E3A19100D40F25 /* TestPopupController.m */; };
 		CADFF8FE16E3A19100D40F25 /* TestPopupController.m in Sources */ = {isa = PBXBuildFile; fileRef = CADFF8FD16E3A19100D40F25 /* TestPopupController.m */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +60,8 @@
 		CA409BC616E3A1290059FAF3 /* PCPopupTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCPopupTests.h; sourceTree = "<group>"; };
 		CA409BC716E3A1290059FAF3 /* PCPopupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCPopupTests.m; sourceTree = "<group>"; };
 		CA409BC916E3A1290059FAF3 /* PCPopupTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PCPopupTests-Prefix.pch"; sourceTree = "<group>"; };
+		CA6D005F16E4725F00269AC8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		CAB95E7216E486DC0048ED4C /* PCPopupDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCPopupDelegate.h; sourceTree = "<group>"; };
 		CADFF8FC16E3A19100D40F25 /* TestPopupController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPopupController.h; sourceTree = "<group>"; };
 		CADFF8FD16E3A19100D40F25 /* TestPopupController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPopupController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA6D006016E4725F00269AC8 /* QuartzCore.framework in Frameworks */,
 				CA409B9516E3A0F40059FAF3 /* UIKit.framework in Frameworks */,
 				CA409B9616E3A0F40059FAF3 /* Foundation.framework in Frameworks */,
 				CA409B9716E3A0F40059FAF3 /* CoreGraphics.framework in Frameworks */,
@@ -107,6 +114,7 @@
 		CA409B3A16E38B490059FAF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CA6D005F16E4725F00269AC8 /* QuartzCore.framework */,
 				CA409B3B16E38B490059FAF3 /* UIKit.framework */,
 				CA409B3D16E38B490059FAF3 /* Foundation.framework */,
 				CA409B3F16E38B490059FAF3 /* CoreGraphics.framework */,
@@ -118,6 +126,7 @@
 		CA409B6B16E3A0090059FAF3 /* PCPopup */ = {
 			isa = PBXGroup;
 			children = (
+				CAB95E7216E486DC0048ED4C /* PCPopupDelegate.h */,
 				CA409B6C16E3A0090059FAF3 /* PCPopupContainerViewController.h */,
 				CA409B6D16E3A0090059FAF3 /* PCPopupContainerViewController.m */,
 				CA409B6E16E3A0090059FAF3 /* UIViewController+PCPopup.h */,
@@ -287,6 +296,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAB95E6816E474C00048ED4C /* PCPopupContainerViewController.m in Sources */,
+				CAB95E6916E474C00048ED4C /* UIViewController+PCPopup.m in Sources */,
+				CAB95E6A16E474C00048ED4C /* TestPopupController.m in Sources */,
 				CA409B9F16E3A0F40059FAF3 /* main.m in Sources */,
 				CA409BA316E3A0F40059FAF3 /* PCAppDelegate.m in Sources */,
 				CA409BAC16E3A0F40059FAF3 /* PCViewController.m in Sources */,

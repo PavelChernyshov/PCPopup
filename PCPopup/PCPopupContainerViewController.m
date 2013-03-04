@@ -7,10 +7,18 @@
 //
 
 #import "PCPopupContainerViewController.h"
+#import "PCPopupDelegate.h"
+
+#define kDefaultTransitonDuration 0.4f
 
 @interface PCPopupContainerViewController ()
 {
     CGSize _spaceAvailable;
+    
+    CAAnimation *_popupAppearanceAnimation;
+    CAAnimation *_backgroundAppearanceAnimation;
+    CAAnimation *_popupDismissAnimation;
+    CAAnimation *_backgroundDismissAnimation;
 }
 
 -(UIViewController *)windowRootVC;
@@ -35,6 +43,11 @@
     self.view = view;
 }
 
+-(void)viewDidLoad
+{
+    [_backgroundView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHandle:)]];
+}
+
 #pragma mark - Accessors
 -(void)setBackgroundView:(UIView *)backgroundView
 {
@@ -50,6 +63,37 @@
     if (_popupViewController != popupViewController)
     {
         _popupViewController = popupViewController;
+        
+        if ([_popupViewController conformsToProtocol:@protocol(PCPopupDelegate) ])
+        {
+            UIViewController<PCPopupDelegate> *controller = (UIViewController<PCPopupDelegate> *)_popupViewController;
+            
+//            _popupAppearanceAnimation = [controller popupAppearanceAnimation];
+//            _popupDismissAnimation = [controller popupDismissAnimation];
+//            _backgroundAppearanceAnimation = [controller backgroundAppearanceAnimation];
+//            _backgroundDismissAnimation = [controller backgroundDismissAnimationn];
+            
+            _popupAppearanceAnimation = [self defaultPopupAnimationReverse:NO];
+            _popupDismissAnimation = [self defaultPopupAnimationReverse:YES];
+            _backgroundAppearanceAnimation = [self defaultBackgroundAnimationReverse:NO];
+            _backgroundDismissAnimation = [self defaultBackgroundAnimationReverse:YES];
+            
+            BOOL dismissPopup = YES;
+            if ([_popupViewController respondsToSelector:@selector(pcPopupDismissesOnOutsideClick)]) {
+                dismissPopup = [controller pcPopupDismissesOnOutsideClick];
+            }
+            if (dismissPopup)
+            {
+                [_backgroundView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHandle:)]];
+            }
+        }
+        else
+        {
+            _popupAppearanceAnimation = [self defaultPopupAnimationReverse:NO];
+            _popupDismissAnimation = [self defaultPopupAnimationReverse:YES];
+            _backgroundAppearanceAnimation = [self defaultBackgroundAnimationReverse:NO];
+            _backgroundDismissAnimation = [self defaultBackgroundAnimationReverse:YES];
+        }
     }
 }
 
@@ -59,15 +103,22 @@
     //Presentation prior checks
     if (!_popupViewController) return;
     [self registerForKeyboardEvents];
-    
-    [_popupViewController viewWillAppear:flag];
-    
+        
     //Setup Animations
-    //Show view
+    _popupView = _popupViewController.view;
+    _popupView.frame = [self centerFrame:_popupView.frame inFrame:self.view.bounds];
     
-    [_popupViewController viewDidAppear:flag];
-    if (completions != NULL) completions();
-
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        if (completions != NULL) completions();
+    }];
+    
+    [_popupView.layer addAnimation:_popupAppearanceAnimation forKey:kCATransition];
+    [self.view addSubview:_popupView];
+    [[self windowRootVC].view addSubview:self.view];
+    [_backgroundView.layer addAnimation:_backgroundAppearanceAnimation forKey:@"Appearance"];
+    
+    [CATransaction commit];
 }
 
 -(void)dismissPopupAnimated:(BOOL)flag completion:(void (^)(void))completion
@@ -75,19 +126,31 @@
     //Dismission prior checks
     [self unregisterForKeyboardEvents];
     
-    [_popupViewController viewWillDisappear:flag];
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:kDefaultTransitonDuration];
+    [CATransaction setCompletionBlock:^{
+        if (completion != NULL) completion();
+        [self.view removeFromSuperview];
+    }];
     
-    //SetupAnimations
-    //RemoveView
+    [_popupView.layer addAnimation:_popupDismissAnimation forKey:kCATransition];    
+    [_backgroundView.layer addAnimation:_backgroundDismissAnimation forKey:@"Appearance"];
     
-    [_popupViewController viewDidDisappear:flag];
-    if (completion != NULL) completion();
+    [CATransaction commit];
 }
 
 #pragma mark - Popup positioning
--(void)positonPopup
+-(void)positonPopupAnimated:(BOOL)animated
 {
-    
+    if (animated) {
+        [UIView animateWithDuration:0.2f animations:^{
+            _popupView.frame = [self centerFrame:_popupView.frame inFrame:CGRectMake(0.0f, 0.0f, _spaceAvailable.width, _spaceAvailable.height)];
+        }];
+    }
+    else
+    {
+        _popupView.frame = [self centerFrame:_popupView.frame inFrame:CGRectMake(0.0f, 0.0f, _spaceAvailable.width, _spaceAvailable.height)];
+    }
 }
 
 -(CGRect)centerFrame:(CGRect)frame inFrame:(CGRect)inFrame
@@ -126,8 +189,8 @@
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     CGFloat kbHeight = MIN(kbSize.width, kbSize.height);
-//    _availableSpace = CGSizeMake(_availableSpace.width, _availableSpace.height - kbHeight);
-//    [self centerPopoverInAvailableSpaceAnimated:YES];
+    _spaceAvailable = CGSizeMake(_spaceAvailable.width, _spaceAvailable.height - kbHeight);
+    [self positonPopupAnimated:YES];
 }
 
 -(void)keyboardDidShow:(NSNotification *)notification
@@ -140,8 +203,8 @@
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     CGFloat kbHeight = MIN(kbSize.width, kbSize.height);
-//    _availableSpace = CGSizeMake(_availableSpace.width, _availableSpace.height + kbHeight);
-//    [self centerPopoverInAvailableSpaceAnimated:YES];
+    _spaceAvailable = CGSizeMake(_spaceAvailable.width, _spaceAvailable.height + kbHeight);
+    [self positonPopupAnimated:YES];
 }
 
 -(void)keyboardDidHide:(NSNotification *)notification
@@ -160,4 +223,49 @@
     return currentWindow.rootViewController;
 }
 
+#pragma mark - Background Tap Handle
+-(void)tapHandle:(UITapGestureRecognizer *)tapGesture
+{
+    [self dismissPopupAnimated:YES completion:NULL];
+}
+
+#pragma mark - Default Animations
+-(CAAnimation *)defaultBackgroundAnimationReverse:(BOOL)reverse
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    animation.duration = kDefaultTransitonDuration;
+    if (reverse)
+    {
+        animation.fromValue = @0.5f;
+        animation.toValue = @0.0f;
+    }
+    else
+    {
+        animation.fromValue = @0.0f;
+        animation.toValue = @0.5f;
+    }
+    animation.fillMode = kCAFillModeBoth;
+    
+    return animation;
+}
+
+-(CAAnimation *)defaultPopupAnimationReverse:(BOOL)reverse
+{
+    CATransition *transitionAnimation = [CATransition animation];
+    
+    transitionAnimation.duration = kDefaultTransitonDuration;
+    transitionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    if (reverse)
+    {
+        transitionAnimation.type = kCATransitionPush;
+        transitionAnimation.subtype = kCATransitionFromBottom;
+    }
+    else
+    {
+        transitionAnimation.type = kCATransitionMoveIn;
+        transitionAnimation.subtype = kCATransitionFromTop;
+    }
+    
+    return transitionAnimation;
+}
 @end

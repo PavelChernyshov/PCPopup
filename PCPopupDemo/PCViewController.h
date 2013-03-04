@@ -10,4 +10,7 @@
 
 @interface PCViewController : UIViewController
 
+
+-(IBAction)showPopup:(id)sender;
+
 @end

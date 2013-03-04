@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PCPopupDelegate.h"
 
-@interface TestPopupController : UIViewController
+@interface TestPopupController : UIViewController <PCPopupDelegate>
 
 @end

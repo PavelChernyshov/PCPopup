@@ -11,7 +11,7 @@
 
 @interface PCPopupContainerViewController : UIViewController
 {
-    UIView *_popoverView;
+    UIView *_popupView;
 }
 
 @property (nonatomic, readwrite, strong) UIView *backgroundView;

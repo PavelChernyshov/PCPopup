@@ -7,12 +7,20 @@
 //
 
 #import "TestPopupController.h"
-
 @interface TestPopupController ()
 
 @end
 
 @implementation TestPopupController
+
+-(void)loadView
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 200.0f, 200.0f)];
+    view.backgroundColor = [UIColor orangeColor];
+
+    self.view = view;
+}
+
 - (void)viewDidLoad
 {
     NSLog(@"View did load");
